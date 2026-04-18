@@ -1,0 +1,666 @@
+{
+  "_comment": "Location presets for hiring-cafe-scraper. Each entry is the exact shape the hiring.cafe API expects. Keys are lowercase canonical names. Contribute new cities via PR!",
+
+  "remote": {
+    "formatted_address": "Worldwide / Remote",
+    "types": ["political"],
+    "geometry": { "location": { "lat": "0", "lon": "0" } },
+    "id": "user_anywhere",
+    "address_components": [],
+    "options": { "flexible_regions": ["anywhere_in_world"] }
+  },
+
+  "ireland": {
+    "formatted_address": "Ireland",
+    "types": ["country"],
+    "geometry": { "location": { "lat": "53.1424", "lon": "-7.6921" } },
+    "id": "user_country",
+    "address_components": [{ "long_name": "Ireland", "short_name": "IE", "types": ["country"] }],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "dublin": {
+    "formatted_address": "Dublin, Ireland",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "53.3498", "lon": "-6.2603" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Dublin", "short_name": "Dublin", "types": ["locality"] },
+      { "long_name": "Ireland", "short_name": "IE", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "cork": {
+    "formatted_address": "Cork, Ireland",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "51.8985", "lon": "-8.4756" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Cork", "short_name": "Cork", "types": ["locality"] },
+      { "long_name": "Ireland", "short_name": "IE", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "galway": {
+    "formatted_address": "Galway, Ireland",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "53.2707", "lon": "-9.0568" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Galway", "short_name": "Galway", "types": ["locality"] },
+      { "long_name": "Ireland", "short_name": "IE", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+
+  "united kingdom": {
+    "formatted_address": "United Kingdom",
+    "types": ["country"],
+    "geometry": { "location": { "lat": "55.3781", "lon": "-3.4360" } },
+    "id": "user_country",
+    "address_components": [{ "long_name": "United Kingdom", "short_name": "GB", "types": ["country"] }],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "london": {
+    "formatted_address": "London, United Kingdom",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "51.5074", "lon": "-0.1278" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "London", "short_name": "London", "types": ["locality"] },
+      { "long_name": "United Kingdom", "short_name": "GB", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "manchester": {
+    "formatted_address": "Manchester, United Kingdom",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "53.4808", "lon": "-2.2426" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Manchester", "short_name": "Manchester", "types": ["locality"] },
+      { "long_name": "United Kingdom", "short_name": "GB", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "edinburgh": {
+    "formatted_address": "Edinburgh, United Kingdom",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "55.9533", "lon": "-3.1883" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Edinburgh", "short_name": "Edinburgh", "types": ["locality"] },
+      { "long_name": "United Kingdom", "short_name": "GB", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "bristol": {
+    "formatted_address": "Bristol, United Kingdom",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "51.4545", "lon": "-2.5879" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Bristol", "short_name": "Bristol", "types": ["locality"] },
+      { "long_name": "United Kingdom", "short_name": "GB", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+
+  "germany": {
+    "formatted_address": "Germany",
+    "types": ["country"],
+    "geometry": { "location": { "lat": "51.1657", "lon": "10.4515" } },
+    "id": "user_country",
+    "address_components": [{ "long_name": "Germany", "short_name": "DE", "types": ["country"] }],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "berlin": {
+    "formatted_address": "Berlin, Germany",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "52.5200", "lon": "13.4050" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Berlin", "short_name": "Berlin", "types": ["locality"] },
+      { "long_name": "Germany", "short_name": "DE", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "munich": {
+    "formatted_address": "Munich, Germany",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "48.1351", "lon": "11.5820" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Munich", "short_name": "Munich", "types": ["locality"] },
+      { "long_name": "Germany", "short_name": "DE", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "hamburg": {
+    "formatted_address": "Hamburg, Germany",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "53.5753", "lon": "10.0153" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Hamburg", "short_name": "Hamburg", "types": ["locality"] },
+      { "long_name": "Germany", "short_name": "DE", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "frankfurt": {
+    "formatted_address": "Frankfurt, Germany",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "50.1109", "lon": "8.6821" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Frankfurt", "short_name": "Frankfurt", "types": ["locality"] },
+      { "long_name": "Germany", "short_name": "DE", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+
+  "netherlands": {
+    "formatted_address": "Netherlands",
+    "types": ["country"],
+    "geometry": { "location": { "lat": "52.1326", "lon": "5.2913" } },
+    "id": "user_country",
+    "address_components": [{ "long_name": "Netherlands", "short_name": "NL", "types": ["country"] }],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "amsterdam": {
+    "formatted_address": "Amsterdam, Netherlands",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "52.3676", "lon": "4.9041" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Amsterdam", "short_name": "Amsterdam", "types": ["locality"] },
+      { "long_name": "Netherlands", "short_name": "NL", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+
+  "france": {
+    "formatted_address": "France",
+    "types": ["country"],
+    "geometry": { "location": { "lat": "46.2276", "lon": "2.2137" } },
+    "id": "user_country",
+    "address_components": [{ "long_name": "France", "short_name": "FR", "types": ["country"] }],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "paris": {
+    "formatted_address": "Paris, France",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "48.8566", "lon": "2.3522" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Paris", "short_name": "Paris", "types": ["locality"] },
+      { "long_name": "France", "short_name": "FR", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+
+  "spain": {
+    "formatted_address": "Spain",
+    "types": ["country"],
+    "geometry": { "location": { "lat": "40.4637", "lon": "-3.7492" } },
+    "id": "user_country",
+    "address_components": [{ "long_name": "Spain", "short_name": "ES", "types": ["country"] }],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "madrid": {
+    "formatted_address": "Madrid, Spain",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "40.4168", "lon": "-3.7038" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Madrid", "short_name": "Madrid", "types": ["locality"] },
+      { "long_name": "Spain", "short_name": "ES", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "barcelona": {
+    "formatted_address": "Barcelona, Spain",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "41.3851", "lon": "2.1734" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Barcelona", "short_name": "Barcelona", "types": ["locality"] },
+      { "long_name": "Spain", "short_name": "ES", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+
+  "portugal": {
+    "formatted_address": "Portugal",
+    "types": ["country"],
+    "geometry": { "location": { "lat": "39.3999", "lon": "-8.2245" } },
+    "id": "user_country",
+    "address_components": [{ "long_name": "Portugal", "short_name": "PT", "types": ["country"] }],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "lisbon": {
+    "formatted_address": "Lisbon, Portugal",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "38.7223", "lon": "-9.1393" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Lisbon", "short_name": "Lisbon", "types": ["locality"] },
+      { "long_name": "Portugal", "short_name": "PT", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+
+  "sweden": {
+    "formatted_address": "Sweden",
+    "types": ["country"],
+    "geometry": { "location": { "lat": "60.1282", "lon": "18.6435" } },
+    "id": "user_country",
+    "address_components": [{ "long_name": "Sweden", "short_name": "SE", "types": ["country"] }],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "stockholm": {
+    "formatted_address": "Stockholm, Sweden",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "59.3293", "lon": "18.0686" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Stockholm", "short_name": "Stockholm", "types": ["locality"] },
+      { "long_name": "Sweden", "short_name": "SE", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+
+  "denmark": {
+    "formatted_address": "Denmark",
+    "types": ["country"],
+    "geometry": { "location": { "lat": "56.2639", "lon": "9.5018" } },
+    "id": "user_country",
+    "address_components": [{ "long_name": "Denmark", "short_name": "DK", "types": ["country"] }],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "copenhagen": {
+    "formatted_address": "Copenhagen, Denmark",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "55.6761", "lon": "12.5683" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Copenhagen", "short_name": "Copenhagen", "types": ["locality"] },
+      { "long_name": "Denmark", "short_name": "DK", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+
+  "switzerland": {
+    "formatted_address": "Switzerland",
+    "types": ["country"],
+    "geometry": { "location": { "lat": "46.8182", "lon": "8.2275" } },
+    "id": "user_country",
+    "address_components": [{ "long_name": "Switzerland", "short_name": "CH", "types": ["country"] }],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "zurich": {
+    "formatted_address": "Zürich, Switzerland",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "47.3769", "lon": "8.5417" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Zürich", "short_name": "Zürich", "types": ["locality"] },
+      { "long_name": "Switzerland", "short_name": "CH", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+
+  "poland": {
+    "formatted_address": "Poland",
+    "types": ["country"],
+    "geometry": { "location": { "lat": "51.9194", "lon": "19.1451" } },
+    "id": "user_country",
+    "address_components": [{ "long_name": "Poland", "short_name": "PL", "types": ["country"] }],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "warsaw": {
+    "formatted_address": "Warsaw, Poland",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "52.2297", "lon": "21.0122" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Warsaw", "short_name": "Warsaw", "types": ["locality"] },
+      { "long_name": "Poland", "short_name": "PL", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "krakow": {
+    "formatted_address": "Kraków, Poland",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "50.0647", "lon": "19.9450" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Kraków", "short_name": "Kraków", "types": ["locality"] },
+      { "long_name": "Poland", "short_name": "PL", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+
+  "austria": {
+    "formatted_address": "Austria",
+    "types": ["country"],
+    "geometry": { "location": { "lat": "47.5162", "lon": "14.5501" } },
+    "id": "user_country",
+    "address_components": [{ "long_name": "Austria", "short_name": "AT", "types": ["country"] }],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "vienna": {
+    "formatted_address": "Vienna, Austria",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "48.2082", "lon": "16.3738" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Vienna", "short_name": "Vienna", "types": ["locality"] },
+      { "long_name": "Austria", "short_name": "AT", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+
+  "czech republic": {
+    "formatted_address": "Czech Republic",
+    "types": ["country"],
+    "geometry": { "location": { "lat": "49.8175", "lon": "15.4730" } },
+    "id": "user_country",
+    "address_components": [{ "long_name": "Czech Republic", "short_name": "CZ", "types": ["country"] }],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "prague": {
+    "formatted_address": "Prague, Czech Republic",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "50.0755", "lon": "14.4378" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Prague", "short_name": "Prague", "types": ["locality"] },
+      { "long_name": "Czech Republic", "short_name": "CZ", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+
+  "united states": {
+    "formatted_address": "United States",
+    "types": ["country"],
+    "geometry": { "location": { "lat": "39.8283", "lon": "-98.5795" } },
+    "id": "user_country",
+    "address_components": [{ "long_name": "United States", "short_name": "US", "types": ["country"] }],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "san francisco": {
+    "formatted_address": "San Francisco, CA, United States",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "37.7749", "lon": "-122.4194" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "San Francisco", "short_name": "San Francisco", "types": ["locality"] },
+      { "long_name": "United States", "short_name": "US", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "new york": {
+    "formatted_address": "New York, NY, United States",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "40.7128", "lon": "-74.0060" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "New York", "short_name": "New York", "types": ["locality"] },
+      { "long_name": "United States", "short_name": "US", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "seattle": {
+    "formatted_address": "Seattle, WA, United States",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "47.6062", "lon": "-122.3321" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Seattle", "short_name": "Seattle", "types": ["locality"] },
+      { "long_name": "United States", "short_name": "US", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "austin": {
+    "formatted_address": "Austin, TX, United States",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "30.2672", "lon": "-97.7431" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Austin", "short_name": "Austin", "types": ["locality"] },
+      { "long_name": "United States", "short_name": "US", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "boston": {
+    "formatted_address": "Boston, MA, United States",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "42.3601", "lon": "-71.0589" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Boston", "short_name": "Boston", "types": ["locality"] },
+      { "long_name": "United States", "short_name": "US", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "chicago": {
+    "formatted_address": "Chicago, IL, United States",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "41.8781", "lon": "-87.6298" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Chicago", "short_name": "Chicago", "types": ["locality"] },
+      { "long_name": "United States", "short_name": "US", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "los angeles": {
+    "formatted_address": "Los Angeles, CA, United States",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "34.0522", "lon": "-118.2437" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Los Angeles", "short_name": "Los Angeles", "types": ["locality"] },
+      { "long_name": "United States", "short_name": "US", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+
+  "canada": {
+    "formatted_address": "Canada",
+    "types": ["country"],
+    "geometry": { "location": { "lat": "56.1304", "lon": "-106.3468" } },
+    "id": "user_country",
+    "address_components": [{ "long_name": "Canada", "short_name": "CA", "types": ["country"] }],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "toronto": {
+    "formatted_address": "Toronto, ON, Canada",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "43.6532", "lon": "-79.3832" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Toronto", "short_name": "Toronto", "types": ["locality"] },
+      { "long_name": "Canada", "short_name": "CA", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "vancouver": {
+    "formatted_address": "Vancouver, BC, Canada",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "49.2827", "lon": "-123.1207" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Vancouver", "short_name": "Vancouver", "types": ["locality"] },
+      { "long_name": "Canada", "short_name": "CA", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "montreal": {
+    "formatted_address": "Montreal, QC, Canada",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "45.5017", "lon": "-73.5673" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Montreal", "short_name": "Montreal", "types": ["locality"] },
+      { "long_name": "Canada", "short_name": "CA", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+
+  "australia": {
+    "formatted_address": "Australia",
+    "types": ["country"],
+    "geometry": { "location": { "lat": "-25.2744", "lon": "133.7751" } },
+    "id": "user_country",
+    "address_components": [{ "long_name": "Australia", "short_name": "AU", "types": ["country"] }],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "sydney": {
+    "formatted_address": "Sydney, NSW, Australia",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "-33.8688", "lon": "151.2093" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Sydney", "short_name": "Sydney", "types": ["locality"] },
+      { "long_name": "Australia", "short_name": "AU", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "melbourne": {
+    "formatted_address": "Melbourne, VIC, Australia",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "-37.8136", "lon": "144.9631" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Melbourne", "short_name": "Melbourne", "types": ["locality"] },
+      { "long_name": "Australia", "short_name": "AU", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+
+  "singapore": {
+    "formatted_address": "Singapore",
+    "types": ["country", "locality"],
+    "geometry": { "location": { "lat": "1.3521", "lon": "103.8198" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Singapore", "short_name": "Singapore", "types": ["locality"] },
+      { "long_name": "Singapore", "short_name": "SG", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+
+  "india": {
+    "formatted_address": "India",
+    "types": ["country"],
+    "geometry": { "location": { "lat": "20.5937", "lon": "78.9629" } },
+    "id": "user_country",
+    "address_components": [{ "long_name": "India", "short_name": "IN", "types": ["country"] }],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "bangalore": {
+    "formatted_address": "Bengaluru, India",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "12.9716", "lon": "77.5946" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Bengaluru", "short_name": "Bangalore", "types": ["locality"] },
+      { "long_name": "India", "short_name": "IN", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "hyderabad": {
+    "formatted_address": "Hyderabad, India",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "17.3850", "lon": "78.4867" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Hyderabad", "short_name": "Hyderabad", "types": ["locality"] },
+      { "long_name": "India", "short_name": "IN", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "pune": {
+    "formatted_address": "Pune, India",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "18.5204", "lon": "73.8567" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Pune", "short_name": "Pune", "types": ["locality"] },
+      { "long_name": "India", "short_name": "IN", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "mumbai": {
+    "formatted_address": "Mumbai, India",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "19.0760", "lon": "72.8777" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Mumbai", "short_name": "Mumbai", "types": ["locality"] },
+      { "long_name": "India", "short_name": "IN", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+
+  "brazil": {
+    "formatted_address": "Brazil",
+    "types": ["country"],
+    "geometry": { "location": { "lat": "-14.2350", "lon": "-51.9253" } },
+    "id": "user_country",
+    "address_components": [{ "long_name": "Brazil", "short_name": "BR", "types": ["country"] }],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "sao paulo": {
+    "formatted_address": "São Paulo, Brazil",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "-23.5505", "lon": "-46.6333" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "São Paulo", "short_name": "São Paulo", "types": ["locality"] },
+      { "long_name": "Brazil", "short_name": "BR", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+
+  "united arab emirates": {
+    "formatted_address": "United Arab Emirates",
+    "types": ["country"],
+    "geometry": { "location": { "lat": "23.4241", "lon": "53.8478" } },
+    "id": "user_country",
+    "address_components": [{ "long_name": "United Arab Emirates", "short_name": "AE", "types": ["country"] }],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "dubai": {
+    "formatted_address": "Dubai, United Arab Emirates",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "25.2048", "lon": "55.2708" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Dubai", "short_name": "Dubai", "types": ["locality"] },
+      { "long_name": "United Arab Emirates", "short_name": "AE", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+
+  "israel": {
+    "formatted_address": "Israel",
+    "types": ["country"],
+    "geometry": { "location": { "lat": "31.0461", "lon": "34.8516" } },
+    "id": "user_country",
+    "address_components": [{ "long_name": "Israel", "short_name": "IL", "types": ["country"] }],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  },
+  "tel aviv": {
+    "formatted_address": "Tel Aviv, Israel",
+    "types": ["locality"],
+    "geometry": { "location": { "lat": "32.0853", "lon": "34.7818" } },
+    "id": "user_city",
+    "address_components": [
+      { "long_name": "Tel Aviv", "short_name": "Tel Aviv", "types": ["locality"] },
+      { "long_name": "Israel", "short_name": "IL", "types": ["country"] }
+    ],
+    "options": { "flexible_regions": ["anywhere_in_continent", "anywhere_in_world"] }
+  }
+}

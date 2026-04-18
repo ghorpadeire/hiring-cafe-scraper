@@ -1,0 +1,42 @@
+{
+  "name": "hiring-cafe-scraper",
+  "version": "1.0.0",
+  "description": "CLI tool to scrape job listings from hiring.cafe by tech stack and location",
+  "main": "src/scraper.js",
+  "bin": {
+    "hiring-cafe-scraper": "bin/cli.js"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "README.md",
+    "LICENSE",
+    ".env.example"
+  ],
+  "scripts": {
+    "start":  "node bin/cli.js",
+    "test":   "node --test test/",
+    "lint":   "node --check src/**/*.js bin/**/*.js"
+  },
+  "keywords": [
+    "jobs", "job-search", "hiring", "scraper", "cli",
+    "hiring-cafe", "job-listings", "career", "tech-jobs"
+  ],
+  "author": "Pranav Ghorpade <ghorpade.ire@gmail.com> (https://github.com/ghorpadeire)",
+  "license": "MIT",
+  "homepage": "https://github.com/ghorpadeire/hiring-cafe-scraper#readme",
+  "repository": {
+    "type": "git",
+    "url":  "git+https://github.com/ghorpadeire/hiring-cafe-scraper.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ghorpadeire/hiring-cafe-scraper/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "dotenv":    "^16.4.5"
+  }
+}
