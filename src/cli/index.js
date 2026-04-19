@@ -46,6 +46,7 @@ GitHub / Contributing:
     .option('--no-filter',              'Disable client-side tech keyword filter')
     .option('--proxy-group <group>',    'Apify proxy group: RESIDENTIAL | DATACENTER', 'RESIDENTIAL')
     .option('--apify-token <token>',    'Apify token (overrides APIFY_TOKEN env var)')
+    .option('--cf-cookie <value>',      'Cloudflare cf_clearance cookie (see README for how to obtain)')
     .action(run);
 
   return program;
@@ -56,6 +57,7 @@ async function run(opts) {
   try { require('dotenv').config(); } catch {}
 
   const apifyToken = opts.apifyToken || process.env.APIFY_TOKEN || null;
+  const cfCookie   = opts.cfCookie   || process.env.CF_CLEARANCE || null;
 
   // ── Print header ──────────────────────────────────────────────────────────
   LOG.bold(`\nhiring-cafe-scraper v${require('../../package.json').version}`);
@@ -71,6 +73,7 @@ async function run(opts) {
   LOG.info(`Remote:     ${opts.remote ? 'yes' : 'no'}`);
   if (apifyToken)  LOG.info(`Proxy:      Apify ${opts.proxyGroup}`);
   else             LOG.info(`Proxy:      none (trying direct)`);
+  if (cfCookie)    LOG.info(`CF cookie:  provided (direct bypass mode)`);
   LOG.dim('─'.repeat(50));
 
   // ── Run scraper ───────────────────────────────────────────────────────────
@@ -87,6 +90,7 @@ async function run(opts) {
       noFilter:   opts.noFilter === false ? false : !opts.filter,
       apifyToken,
       proxyGroup: opts.proxyGroup,
+      cfCookie,
     }));
   } catch (err) {
     if (err.isCloudflare) {

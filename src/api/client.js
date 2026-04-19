@@ -2,6 +2,7 @@
 
 const http  = require('http');
 const https = require('https');
+const { ApifyClient } = require('apify-client');
 
 const BASE_URL  = 'https://hiring.cafe';
 const PROXY_HOST = 'proxy.apify.com';
@@ -29,9 +30,10 @@ function isCloudflareBlock(status, body) {
 /**
  * Direct POST — works on residential IPs. Returns parsed JSON or throws.
  */
-async function postDirect(url, payload) {
+async function postDirect(url, payload, cfCookie) {
   const body = JSON.stringify(payload);
   const parsed = new URL(url);
+  const extraHeaders = cfCookie ? { Cookie: `cf_clearance=${cfCookie}` } : {};
 
   return new Promise((resolve, reject) => {
     const req = https.request({
@@ -39,7 +41,7 @@ async function postDirect(url, payload) {
       port:     443,
       path:     parsed.pathname + parsed.search,
       method:   'POST',
-      headers:  { ...BROWSER_HEADERS, 'Content-Length': Buffer.byteLength(body) },
+      headers:  { ...BROWSER_HEADERS, ...extraHeaders, 'Content-Length': Buffer.byteLength(body) },
     });
 
     req.setTimeout(30000, () => req.destroy(new Error('Request timeout')));
@@ -69,10 +71,19 @@ async function postDirect(url, payload) {
  * POST via Apify Residential Proxy — bypasses Cloudflare Turnstile.
  * Requires a valid APIFY_TOKEN with proxy access.
  */
+function getProxyUser(proxyGroup) {
+  // Apify proxy username conventions:
+  // 'auto'        → shared datacenter (free tier)
+  // 'groups-RESIDENTIAL' → residential IPs (paid)
+  if (!proxyGroup || proxyGroup.toUpperCase() === 'DATACENTER') return 'auto';
+  if (proxyGroup.startsWith('groups-')) return proxyGroup;
+  return `groups-${proxyGroup}`;
+}
+
 function postViaProxy(url, payload, apifyToken, proxyGroup = 'RESIDENTIAL') {
   const body    = JSON.stringify(payload);
   const target  = new URL(url);
-  const proxyUser = `groups-${proxyGroup}`;
+  const proxyUser = getProxyUser(proxyGroup);
   const proxyAuth = Buffer.from(`${proxyUser}:${apifyToken}`).toString('base64');
 
   return new Promise((resolve, reject) => {
@@ -137,11 +148,11 @@ function postViaProxy(url, payload, apifyToken, proxyGroup = 'RESIDENTIAL') {
  * Returns { data, usedProxy }.
  */
 async function post(url, payload, options = {}) {
-  const { apifyToken, proxyGroup = 'RESIDENTIAL', skipDirect = false } = options;
+  const { apifyToken, proxyGroup = 'RESIDENTIAL', skipDirect = false, cfCookie } = options;
 
   if (!skipDirect) {
     try {
-      const data = await postDirect(url, payload);
+      const data = await postDirect(url, payload, cfCookie);
       return { data, usedProxy: false };
     } catch (err) {
       if (!err.isCloudflare) throw err;
@@ -167,4 +178,99 @@ async function post(url, payload, options = {}) {
   return { data, usedProxy: true };
 }
 
-module.exports = { post, postDirect, postViaProxy };
+/**
+ * Batch-fetch multiple API pages via an Apify playwright-scraper actor run.
+ * The actor navigates to hiring.cafe (Cloudflare auto-clears inside Apify),
+ * then makes all the fetch() calls from within the browser and returns results.
+ *
+ * @param {string} jobsUrl   - The /api/search-jobs endpoint
+ * @param {object[]} payloads - Array of page payloads to fetch in one actor run
+ * @param {string} apifyToken
+ * @returns {Promise<object[]>} - Array of API responses (one per payload)
+ */
+async function batchViaApifyActor(jobsUrl, payloads, apifyToken) {
+  const client = new ApifyClient({ token: apifyToken });
+
+  // Navigate to a neutral page first so Crawlee's 403-block detection doesn't fire on CF.
+  // Then inside pageFunction we explicitly goto hiring.cafe with waitUntil:'load',
+  // which lets the CF JS challenge run and resolve before we make API calls.
+  const pageFunction = /* js */`
+    async ({ page, request, log }) => {
+      const { jobsUrl, payloads } = request.userData;
+
+      log.info('Navigating to hiring.cafe (letting CF challenge resolve)...');
+      try {
+        await page.goto('https://hiring.cafe', { waitUntil: 'load', timeout: 60000 });
+      } catch (e) {
+        log.warning('goto warning (may be normal for SPA): ' + e.message);
+      }
+
+      // Wait up to 30 s for CF to clear
+      const deadline = Date.now() + 30000;
+      while (Date.now() < deadline) {
+        const title = await page.title();
+        if (!title.includes('Just a moment') && !title.includes('Checking') && title.length > 3) break;
+        await page.waitForTimeout(2000);
+      }
+      log.info('Page title after wait: ' + (await page.title()));
+      await page.waitForTimeout(1500);
+
+      const results = [];
+      for (let i = 0; i < payloads.length; i++) {
+        log.info('Fetching payload ' + (i + 1) + '/' + payloads.length);
+        const result = await page.evaluate(async ({ url, body }) => {
+          try {
+            const res = await fetch(url, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': '*/*',
+                'Origin': 'https://hiring.cafe',
+                'Referer': 'https://hiring.cafe/',
+              },
+              body: JSON.stringify(body),
+              credentials: 'include',
+            });
+            if (!res.ok) return { error: 'HTTP ' + res.status };
+            return { data: await res.json() };
+          } catch (e) {
+            return { error: e.message };
+          }
+        }, { url: jobsUrl, body: payloads[i] });
+
+        results.push(result);
+        if (i < payloads.length - 1) await page.waitForTimeout(400);
+      }
+
+      return { results };
+    }
+  `;
+
+  const run = await client.actor('apify/playwright-scraper').call({
+    // Start at a neutral page — Crawlee's 403-block detection won't fire here.
+    // hiring.cafe navigation happens inside pageFunction via page.goto().
+    startUrls: [{
+      url: 'https://www.google.com',
+      userData: { jobsUrl, payloads }
+    }],
+    pageFunction,
+    launchContext: { stealth: true, useChrome: true },
+    maxRequestsPerCrawl: 1,
+    navigationTimeoutSecs: 30,
+    pageLoadTimeoutSecs: 30,
+    proxyConfiguration: { useApifyProxy: true },
+  }, { waitSecs: 360 });
+
+  if (run.status !== 'SUCCEEDED') {
+    throw new Error(`Apify actor run failed (status: ${run.status}). Check: https://console.apify.com/actors/runs/${run.id}`);
+  }
+
+  const { items } = await client.dataset(run.defaultDatasetId).listItems({ clean: true });
+  const allResults = [];
+  for (const item of items) {
+    if (item.results) allResults.push(...item.results);
+  }
+  return allResults;
+}
+
+module.exports = { post, postDirect, postViaProxy, batchViaApifyActor };

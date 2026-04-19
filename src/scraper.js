@@ -1,6 +1,8 @@
 'use strict';
 
-const { post }       = require('./api/client');
+const { post, postDirect, batchViaApifyActor } = require('./api/client');
+const { batchViaLocalBrowser, findBrowser }   = require('./transport/local-chrome');
+const { readCfClearance }  = require('./utils/brave-cookie');
 const { buildPayload, expandTech } = require('./api/payload');
 const { normalise }  = require('./api/normalise');
 const sleep          = require('./utils/sleep');
@@ -45,28 +47,36 @@ async function scrape(config) {
     noFilter = false,
     apifyToken,
     proxyGroup = 'RESIDENTIAL',
+    cfCookie,
   } = config;
 
-  const postOpts = { apifyToken, proxyGroup };
+  // Auto-read CF cookie from browser profile (works when Chrome/Brave is closed)
+  let resolvedCfCookie = cfCookie;
+  if (!resolvedCfCookie) {
+    const auto = await readCfClearance();
+    if (auto) {
+      resolvedCfCookie = auto;
+      LOG.info('CF cookie auto-read from browser profile');
+    }
+  }
+
+  const postOpts = { apifyToken, proxyGroup, cfCookie: resolvedCfCookie };
   let usedProxy  = false;
   let proxyDetected = false;
 
   const payloadConfig = { tech, query, location, days, remote, seniority, pageSize: PAGE_SIZE };
 
-  // ── Step 1: Get total count ───────────────────────────────────────────────
+  // ── Step 1: Get total count (direct only — proxy not needed for this) ───────
   let totalJobs = 0;
   try {
-    const { data, usedProxy: p } = await post(COUNT_URL, buildPayload(payloadConfig, 0), postOpts);
-    if (p) { usedProxy = true; proxyDetected = true; }
+    const data = await postDirect(COUNT_URL, buildPayload(payloadConfig, 0), resolvedCfCookie);
     totalJobs = data?.total ?? data?.count ?? data?.totalCount ?? 0;
     if (totalJobs) LOG.success(`Found ${totalJobs.toLocaleString()} matching jobs`);
   } catch (err) {
-    if (err.isCloudflare) throw err;  // Bubble up — show user the helpful message
-    LOG.warn(`Count endpoint unavailable: ${err.message}. Will paginate until empty.`);
-  }
-
-  if (!proxyDetected) {
-    LOG.success('Direct connection successful (no proxy needed)');
+    if (!err.isCloudflare) {
+      LOG.warn(`Count endpoint unavailable: ${err.message}. Will paginate until empty.`);
+    }
+    // CF block on count endpoint is normal — proceed without the total
   }
 
   const totalPages = totalJobs
@@ -76,48 +86,151 @@ async function scrape(config) {
   // ── Step 2: Paginate ──────────────────────────────────────────────────────
   const allJobs  = [];
   const seenKeys = new Set();
-  const startMs  = Date.now();
 
-  for (let p = 0; p < totalPages; p++) {
-    const eta = p > 0
-      ? `  ETA ~${Math.round(((Date.now() - startMs) / p) * (totalPages - p) / 1000)}s`
-      : '';
+  // Try direct pagination first; if Cloudflare blocks, fall back to Apify actor
+  let useActor = false;
+  let cloudflareHit = false;
 
-    LOG.step(`[${p + 1}/${totalPages}] Fetching page...${eta}`);
-
-    let data;
-    try {
-      const result = await post(JOBS_URL, buildPayload(payloadConfig, p), {
-        ...postOpts,
-        skipDirect: usedProxy,  // once proxy is confirmed, skip direct attempt
-      });
-      data = result.data;
-      if (result.usedProxy) usedProxy = true;
-    } catch (err) {
-      if (err.isCloudflare) throw err;
-      LOG.ok(`\nError on page ${p}: ${err.message}`);
-      break;
-    }
-
+  // Probe page 0 to decide transport (direct first, then actor if blocked)
+  LOG.step(`[1/${totalPages}] Fetching page...`);
+  try {
+    // Always try direct first (with CF cookie if available)
+    const data = await postDirect(JOBS_URL, buildPayload(payloadConfig, 0), resolvedCfCookie);
     const pageJobs = extractJobs(data);
-    if (pageJobs.length === 0) {
-      LOG.ok(' empty — done');
-      break;
-    }
-
-    let added = 0;
+    LOG.ok(` +${pageJobs.length} jobs`);
     for (const raw of pageJobs) {
       const job = normalise(raw);
       const key = job.id || job.applyUrl || `${job.title}|${job.company}`;
-      if (key && !seenKeys.has(key)) {
-        seenKeys.add(key);
-        allJobs.push(job);
-        added++;
+      if (key && !seenKeys.has(key)) { seenKeys.add(key); allJobs.push(job); }
+    }
+    if (pageJobs.length === 0) { LOG.ok(' empty'); }
+    LOG.success('Direct connection works — no proxy needed');
+  } catch (err) {
+    cloudflareHit = true;
+    if (resolvedCfCookie && err.isCloudflare) {
+      LOG.warn('Provided CF cookie was rejected (expired?) — falling back to browser/actor.');
+    }
+    const localBrowserPath = findBrowser();
+    const hasLocalBrowser  = !!localBrowserPath;
+    useActor = !hasLocalBrowser && !!apifyToken;
+
+    if (!hasLocalBrowser && !apifyToken) {
+      const cfErr = new Error(
+        'Cloudflare blocked the direct request.\n\n' +
+        '  ── Quick fix: use your browser\'s CF cookie ──────────────────────────\n' +
+        '  1. Open https://hiring.cafe in Chrome or Brave\n' +
+        '  2. Open DevTools (F12) → Application → Cookies → hiring.cafe\n' +
+        '  3. Copy the value of "cf_clearance"\n' +
+        '  4. Re-run with:  --cf-cookie <paste-value-here>\n' +
+        '     Or set:       CF_CLEARANCE=<value> in .env\n\n' +
+        '  ── Cloud bypass (requires Apify paid plan) ───────────────────────────\n' +
+        '  Add APIFY_TOKEN=apify_api_... to .env\n' +
+        '  Get a token at: https://console.apify.com/account/integrations\n' +
+        '  Note: Cloudflare bypass in cloud requires Apify\'s RESIDENTIAL plan.'
+      );
+      cfErr.isCloudflare = true;
+      throw cfErr;
+    }
+
+    if (hasLocalBrowser) {
+      LOG.warn(`Direct request blocked — switching to local browser (${localBrowserPath.split(/[\\/]/).pop()})`);
+    } else {
+      LOG.warn(`Direct request blocked (${err.message.split('\n')[0]}) — switching to Apify actor`);
+    }
+  }
+
+  if (cloudflareHit && findBrowser()) {
+    // ── Local browser path: raw CDP, no Playwright markers, CF clears on residential IPs ──
+    LOG.step(`Building ${totalPages} page payloads for local browser run...`);
+    const payloads = Array.from({ length: totalPages }, (_, p) => buildPayload(payloadConfig, p));
+    LOG.ok(' done');
+    LOG.info(`Launching local browser (this takes ~30-60s for Cloudflare to clear)...`);
+
+    let browserResults;
+    try {
+      browserResults = await batchViaLocalBrowser(JOBS_URL, payloads);
+    } catch (err) {
+      if (apifyToken) {
+        LOG.warn(`Local browser failed (${err.message.split('\n')[0]}) — trying Apify actor`);
+        useActor = true;
+      } else {
+        throw new Error(`Local browser failed: ${err.message}`);
       }
     }
 
-    LOG.ok(` +${added} jobs (${allJobs.length} total)`);
-    if (p < totalPages - 1) await sleep(350);
+    if (browserResults) {
+      for (const result of browserResults) {
+        if (result.error) { LOG.warn(`Browser page error: ${result.error}`); continue; }
+        const pageJobs = extractJobs(result.data || {});
+        for (const raw of pageJobs) {
+          const job = normalise(raw);
+          const key = job.id || job.applyUrl || `${job.title}|${job.company}`;
+          if (key && !seenKeys.has(key)) { seenKeys.add(key); allJobs.push(job); }
+        }
+      }
+      LOG.success(`Browser run complete — ${allJobs.length} raw jobs collected`);
+    }
+  }
+
+  if (useActor) {
+    // ── Apify actor path: batch all page payloads in one actor run ──────────
+    LOG.step(`Building ${totalPages} page payloads for actor run...`);
+    const payloads = Array.from({ length: totalPages }, (_, p) => buildPayload(payloadConfig, p));
+    LOG.ok(' done');
+    LOG.info(`Launching Apify playwright-scraper actor (this takes ~60-90s)...`);
+
+    let actorResults;
+    try {
+      actorResults = await batchViaApifyActor(JOBS_URL, payloads, apifyToken);
+    } catch (err) {
+      throw new Error(`Apify actor failed: ${err.message}`);
+    }
+
+    for (const result of actorResults) {
+      if (result.error) { LOG.warn(`Actor page error: ${result.error}`); continue; }
+      const pageJobs = extractJobs(result.data || {});
+      for (const raw of pageJobs) {
+        const job = normalise(raw);
+        const key = job.id || job.applyUrl || `${job.title}|${job.company}`;
+        if (key && !seenKeys.has(key)) { seenKeys.add(key); allJobs.push(job); }
+      }
+    }
+    LOG.success(`Actor run complete — ${allJobs.length} raw jobs collected`);
+    usedProxy = true;
+
+  } else if (!cloudflareHit) {
+    // ── Direct path: paginate normally from page 1 onwards ─────────────────
+    const startMs = Date.now();
+    for (let p = 1; p < totalPages; p++) {
+      const elapsed = Date.now() - startMs;
+      const eta = p > 1 ? `  ETA ~${Math.round((elapsed / (p-1)) * (totalPages - p) / 1000)}s` : '';
+      LOG.step(`[${p + 1}/${totalPages}] Fetching page...${eta}`);
+
+      let data;
+      try {
+        const result = await post(JOBS_URL, buildPayload(payloadConfig, p), {
+          ...postOpts, skipDirect: usedProxy,
+        });
+        data = result.data;
+        if (result.usedProxy) usedProxy = true;
+      } catch (err) {
+        if (err.isCloudflare) throw err;
+        LOG.ok(`\nError on page ${p}: ${err.message}`);
+        break;
+      }
+
+      const pageJobs = extractJobs(data);
+      if (pageJobs.length === 0) { LOG.ok(' empty — done'); break; }
+
+      let added = 0;
+      for (const raw of pageJobs) {
+        const job = normalise(raw);
+        const key = job.id || job.applyUrl || `${job.title}|${job.company}`;
+        if (key && !seenKeys.has(key)) { seenKeys.add(key); allJobs.push(job); added++; }
+      }
+      LOG.ok(` +${added} (${allJobs.length} total)`);
+      if (p < totalPages - 1) await sleep(350);
+    }
   }
 
   // ── Step 3: Client-side tech filter ──────────────────────────────────────
