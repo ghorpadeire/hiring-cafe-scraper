@@ -63,6 +63,7 @@ hiring-cafe-scraper --location list
 | `-o, --output <path>` | — | Output file path (extension auto-added) |
 | `-p, --pages <n>` | `50` | Max pages to fetch (1000 jobs/page) |
 | `--no-filter` | — | Disable client-side keyword filter |
+| `--cf-cookie <value>` | — | Cloudflare `cf_clearance` cookie (see CF bypass guide) |
 | `--proxy-group <g>` | `RESIDENTIAL` | Apify proxy group: `RESIDENTIAL` or `DATACENTER` |
 | `--apify-token <tok>` | — | Apify token (overrides `APIFY_TOKEN` env var) |
 | `-v, --version` | — | Show version |
@@ -93,33 +94,77 @@ The `--location` flag accepts:
 
 ---
 
-## Cloudflare & Proxy Guide
+## Cloudflare Bypass Guide
 
-hiring.cafe uses Cloudflare Turnstile to block bots.
+hiring.cafe runs Cloudflare Bot Fight Mode which blocks all non-browser HTTP clients.
+The scraper uses a layered bypass strategy — try each option in order:
 
-| Your environment | What happens | What to do |
-|-----------------|--------------|------------|
-| Home internet (residential IP) | ✅ Works directly | Nothing — just run the tool |
-| Corporate network / VPN | ⚠️ May be blocked | Try without VPN first |
-| Cloud server (AWS, VPS, GitHub Actions) | ❌ Blocked | Set `APIFY_TOKEN` (see below) |
+---
 
-### Setting up Apify Proxy (for cloud servers)
+### Option 1 — CF cookie (recommended, free, works everywhere)
+
+This is the easiest bypass. Cloudflare issues a `cf_clearance` cookie to real browsers that lasts ~30 minutes. Pass it to the scraper and all requests bypass CF automatically.
+
+**Steps:**
+
+1. Open **https://hiring.cafe** in Chrome or Brave
+2. Open DevTools → **Application** → **Cookies** → `hiring.cafe`
+3. Copy the value of **`cf_clearance`**
+4. Run the scraper with the cookie:
+
+```bash
+hiring-cafe-scraper --tech Java --location Dublin --cf-cookie <paste-value-here>
+```
+
+Or set it permanently in `.env`:
+
+```env
+CF_CLEARANCE=<paste-value-here>
+```
+
+> The cookie expires after ~30 minutes. Re-copy from DevTools if you get a CF block again.
+
+**Auto-detection (Windows only):** If Chrome/Brave is **closed**, the scraper automatically reads `cf_clearance` from your browser profile — no manual step needed.
+
+---
+
+### Option 2 — Local browser (auto-fallback, no setup)
+
+When no CF cookie is provided, the scraper automatically launches your installed Chrome or Brave browser via Chrome DevTools Protocol (raw CDP — no `navigator.webdriver` injection). Works on home/residential IPs where Cloudflare's challenge auto-solves.
+
+No configuration needed — just have Chrome or Brave installed.
+
+---
+
+### Option 3 — Apify cloud actor (for CI/servers)
+
+For cloud servers (GitHub Actions, VPS, AWS) where no local browser is available:
 
 1. Create a free account at [apify.com](https://apify.com)
-2. Go to **Account → Integrations** and copy your API token
-3. Add it to a `.env` file in your project:
+2. Go to **Account → Integrations** → copy your API token
+3. Add to `.env`:
 
 ```env
 APIFY_TOKEN=apify_api_xxxxxxxxxxxxxxxxxxxx
 ```
 
-Or pass it directly:
+> **Important:** Cloudflare bypass in Apify's cloud requires the **RESIDENTIAL** proxy plan ($49/mo). The free plan uses datacenter IPs which Cloudflare actively blocks.
 
 ```bash
 hiring-cafe-scraper --tech Java --location Dublin --apify-token apify_api_xxx
 ```
 
-> **Note:** Cloudflare bypass requires Apify's **RESIDENTIAL** proxy plan. The free tier includes datacenter proxies which may or may not work. If `RESIDENTIAL` fails, try `--proxy-group DATACENTER`.
+---
+
+### Bypass decision matrix
+
+| Environment | Recommended option |
+|-------------|-------------------|
+| Home PC / Mac (Chrome/Brave installed) | Option 2 — auto (or Option 1 if CF challenges persist) |
+| Home PC (Chrome/Brave closed first) | Option 1 — auto-detected from browser profile |
+| VPN / corporate network | Option 1 — CF cookie |
+| CI server / GitHub Actions | Option 3 — Apify RESIDENTIAL plan |
+| Any environment | Option 1 — CF cookie always works |
 
 ---
 
